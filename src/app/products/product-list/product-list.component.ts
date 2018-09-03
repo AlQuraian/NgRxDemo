@@ -1,54 +1,41 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Store, select } from '@ngrx/store';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
-import { Store, select } from '@ngrx/store';
+import * as fromProduct from '../state/product.reducer';
 
 @Component({
   selector: 'pm-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent implements OnInit, OnDestroy {
+export class ProductListComponent implements OnInit {
   pageTitle = 'Products';
   errorMessage: string;
 
-  displayCode: boolean;
+  displayCode$: Observable<boolean>;
 
   products: Product[];
 
   // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
-  sub: Subscription;
+  selectedProduct$: Observable<Product | null>;
 
   constructor(
-    private store: Store<any>,
+    private store: Store<fromProduct.State>,
     private productService: ProductService) { }
 
   ngOnInit(): void {
-    this.sub = this.productService.selectedProductChanges$.subscribe(
-      selectedProduct => this.selectedProduct = selectedProduct
-    );
+    this.selectedProduct$ = this.productService.selectedProductChanges$;
 
     this.productService.getProducts().subscribe(
       (products: Product[]) => this.products = products,
       (err: any) => this.errorMessage = err.error
     );
 
-    // TODO: unsubscribe
-    this.store.pipe(select('products'))
-      .subscribe(
-        products => {
-          if (products) {
-            this.displayCode = products.showProductCode;
-          }
-        });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    this.displayCode$ = this.store.pipe(select(fromProduct.getShowProductCode));
   }
 
   checkChanged(value: boolean): void {
