@@ -1,8 +1,8 @@
-import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import { Product } from "../product";
+import { Product } from '../product';
 import * as fromRoot from '../../state/app.state';
-import { ProductActionTypes, ProductActions } from "./product.actions";
+import { ProductActionTypes, ProductActions } from './product.actions';
 
 interface State extends fromRoot.State {
   products: ProductState;
@@ -12,13 +12,14 @@ interface ProductState {
   showProductCode: boolean;
   currentProduct: Product;
   products: Product[];
+  loadError?: string;
 }
 
 const initialState: ProductState = {
   showProductCode: true,
   currentProduct: null,
   products: []
-}
+};
 
 const getProductFeatureState = createFeatureSelector<ProductState>('products');
 
@@ -35,6 +36,11 @@ const getCurrentProduct = createSelector(
 const getProducts = createSelector(
   getProductFeatureState,
   state => state.products
+);
+
+const getLoadError = createSelector(
+  getProductFeatureState,
+  state => state.loadError
 );
 
 function reducer(state: ProductState = initialState, action: ProductActions): ProductState {
@@ -72,7 +78,15 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
     case ProductActionTypes.LoadSuccess:
       return {
         ...state,
-        products: action.payload
+        products: action.payload,
+        loadError: ''
+      };
+
+    case ProductActionTypes.LoadFail:
+      return {
+        ...state,
+        products: [],
+        loadError: action.payload
       };
 
     default:
@@ -80,4 +94,12 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
   }
 }
 
-export { State, ProductState, reducer, getShowProductCode, getCurrentProduct, getProducts };
+export {
+  State,
+  ProductState,
+  reducer,
+  getShowProductCode,
+  getCurrentProduct,
+  getProducts,
+  getLoadError
+};

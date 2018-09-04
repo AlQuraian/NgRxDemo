@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { Action } from '@ngrx/store';
-
 import { Actions, ofType, Effect } from '@ngrx/effects';
+
 import { ProductService } from '../product.service';
 import { ProductActionTypes, LoadSuccess, LoadFail } from './product.actions';
 
 @Injectable()
-export class ProdyctEffects {
+export class ProductEffects {
 
   constructor(
     private actions$: Actions,
@@ -21,7 +21,7 @@ export class ProdyctEffects {
     mergeMap(() =>
       this.service.getProducts()
         .pipe(
-          map(products => (new LoadSuccess(products))),
+          map(products => new LoadSuccess(products)),
           catchError(err => of(new LoadFail(err)))
         )));
 }

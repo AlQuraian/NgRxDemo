@@ -4,9 +4,8 @@ import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 
 import { Product } from '../product';
-import { ProductService } from '../product.service';
 import * as fromProduct from '../state/product.reducer';
-import { ToggleProductCode, SetCurrentProduct, InitializeCurrentProduct } from '../state/product.actions';
+import { ToggleProductCode, SetCurrentProduct, InitializeCurrentProduct, Load } from '../state/product.actions';
 
 @Component({
   selector: 'pm-product-list',
@@ -15,26 +14,23 @@ import { ToggleProductCode, SetCurrentProduct, InitializeCurrentProduct } from '
 })
 export class ProductListComponent implements OnInit {
   pageTitle = 'Products';
-  errorMessage: string;
+  errorMessage$: Observable<string>;
 
   displayCode$: Observable<boolean>;
 
-  products: Product[];
+  products$: Observable<Product[]>;
 
   // Used to highlight the selected product in the list
   selectedProduct$: Observable<Product | null>;
 
-  constructor(
-    private store: Store<fromProduct.State>,
-    private productService: ProductService) { }
+  constructor(private store: Store<fromProduct.State>) { }
 
   ngOnInit(): void {
     this.selectedProduct$ = this.store.pipe(select(fromProduct.getCurrentProduct));
 
-    this.productService.getProducts().subscribe(
-      (products: Product[]) => this.products = products,
-      (err: any) => this.errorMessage = err.error
-    );
+    this.store.dispatch(new Load());
+    this.products$ = this.store.pipe(select(fromProduct.getProducts));
+    this.errorMessage$ = this.store.pipe(select(fromProduct.getLoadError));
 
     this.displayCode$ = this.store.pipe(select(fromProduct.getShowProductCode));
   }
