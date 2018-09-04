@@ -10,27 +10,45 @@ interface State extends fromRoot.State {
 
 interface ProductState {
   showProductCode: boolean;
-  currentProduct: Product;
+  currentProductId: number | null;
   products: Product[];
   loadError?: string;
 }
 
 const initialState: ProductState = {
   showProductCode: true,
-  currentProduct: null,
+  currentProductId: null,
   products: []
 };
 
-const getProductFeatureState = createFeatureSelector<ProductState>('products');
+const getProductFeatureState =
+  createFeatureSelector<ProductState>('products');
 
 const getShowProductCode = createSelector(
   getProductFeatureState,
   state => state.showProductCode
 );
 
+const getCurrentProductId = createSelector(
+  getProductFeatureState,
+  state => state.currentProductId
+);
+
 const getCurrentProduct = createSelector(
   getProductFeatureState,
-  state => state.currentProduct
+  getCurrentProductId,
+  (state, currentProductId) => {
+    if (!!currentProductId) {
+      return state.products.find(p => p.id === currentProductId);
+    }
+    return {
+      id: 0,
+      productName: '',
+      productCode: 'New',
+      description: '',
+      starRating: 0
+    };
+  }
 );
 
 const getProducts = createSelector(
@@ -54,25 +72,19 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
     case ProductActionTypes.SetCurrentProduct:
       return {
         ...state,
-        currentProduct: { ...action.payload }
+        currentProductId: action.payload.id
       };
 
     case ProductActionTypes.ClearCurrentProduct:
       return {
         ...state,
-        currentProduct: null
+        currentProductId: null
       };
 
     case ProductActionTypes.InitializeCurrentProduct:
       return {
         ...state,
-        currentProduct: {
-          id: 0,
-          productName: '',
-          productCode: 'New',
-          description: '',
-          starRating: 0
-        }
+        currentProductId: 0
       };
 
     case ProductActionTypes.LoadSuccess:
@@ -88,6 +100,23 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
         products: [],
         loadError: action.payload
       };
+
+    case ProductActionTypes.UpdateProductSuccess:
+      // Object.assign(state.products[state.products.findIndex(product => product.id === action.payload.id)], action.payload);
+
+      // const updatedProducts = state.products.map(
+      //   item => action.payload.id === item.id ? action.payload : item);
+
+      return {
+        ...state,
+        currentProductId: action.payload.id
+      };
+
+    // case ProductActionTypes.UpdateProductSuccess:
+    //   return {
+    //     ...state,
+    //     currentProductId: action.payload.id
+    //   };
 
     default:
       return state;
