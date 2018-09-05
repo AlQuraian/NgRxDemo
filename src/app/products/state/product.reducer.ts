@@ -13,6 +13,7 @@ interface ProductState {
   currentProductId: number | null;
   products: Product[];
   loadError?: string;
+  updateError?: string;
 }
 
 const initialState: ProductState = {
@@ -102,21 +103,21 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
       };
 
     case ProductActionTypes.UpdateProductSuccess:
-      // Object.assign(state.products[state.products.findIndex(product => product.id === action.payload.id)], action.payload);
-
-      // const updatedProducts = state.products.map(
-      //   item => action.payload.id === item.id ? action.payload : item);
+      const updatedProducts = state.products.map(
+        item => action.payload.id === item.id ? action.payload : item);
 
       return {
         ...state,
-        currentProductId: action.payload.id
+        products: updatedProducts,
+        currentProductId: action.payload.id,
+        updateError: ''
       };
 
-    // case ProductActionTypes.UpdateProductSuccess:
-    //   return {
-    //     ...state,
-    //     currentProductId: action.payload.id
-    //   };
+    case ProductActionTypes.UpdateProductFail:
+      return {
+        ...state,
+        updateError: action.payload
+      }
 
     default:
       return state;
