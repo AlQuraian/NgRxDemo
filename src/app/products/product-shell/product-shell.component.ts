@@ -15,7 +15,7 @@ export class ProductShellComponent implements OnInit {
 
   errorMessage$: Observable<string>;
   displayCode$: Observable<boolean>;
-  products$: Observable<Product[]>;
+  products$: Observable<ReadonlyArray<Product>>;
   selectedProduct$: Observable<Product | null>;
 
   constructor(private store: Store<fromProduct.State>) { }

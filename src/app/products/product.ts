@@ -1,9 +1,9 @@
 /* Defines the product entity */
 export interface Product {
-    id: number | null;
-    productName: string;
-    productCode: string;
-    description: string;
-    starRating: number;
+  readonly id: number | null;
+  readonly productName: string;
+  readonly productCode: string;
+  readonly description: string;
+  readonly starRating: number;
 }
 

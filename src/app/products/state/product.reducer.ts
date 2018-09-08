@@ -1,13 +1,12 @@
 import { Product } from "../product";
 import { ProductActionTypes, ProductActions } from "./product.actions";
 
-
 interface ProductState {
-  showProductCode: boolean;
-  currentProductId: number | null;
-  products: Product[];
-  loadError?: string;
-  updateError?: string;
+  readonly showProductCode: boolean;
+  readonly currentProductId: number | null;
+  readonly products: ReadonlyArray<Product>;
+  readonly loadError?: string;
+  readonly updateError?: string;
 }
 
 const initialState: ProductState = {
