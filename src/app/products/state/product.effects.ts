@@ -6,15 +6,7 @@ import { Action } from '@ngrx/store';
 import { Actions, ofType, Effect } from '@ngrx/effects';
 
 import { ProductService } from '../product.service';
-import {
-  ProductActionTypes,
-  LoadSuccess,
-  LoadFail,
-  UpdateProduct,
-  UpdateProductSuccess,
-  UpdateProductFail
-} from './product.actions';
-import { Product } from '../product';
+import * as actions from './product.actions';
 
 @Injectable()
 export class ProductEffects {
@@ -26,12 +18,12 @@ export class ProductEffects {
   @Effect()
   loadProducts$: Observable<Action> = this.actions$
     .pipe(
-      ofType(ProductActionTypes.Load),
+      ofType(actions.ProductActionTypes.Load),
       mergeMap(() =>
         this.service.getProducts()
           .pipe(
-            map(products => new LoadSuccess(products)),
-            catchError(err => of(new LoadFail(err)))
+            map(products => new actions.LoadSuccess(products)),
+            catchError(err => of(new actions.LoadFail(err)))
           ))
     );
 
@@ -50,12 +42,12 @@ export class ProductEffects {
   @Effect()
   updateProduct$: Observable<Action> = this.actions$
     .pipe(
-      ofType<UpdateProduct>(ProductActionTypes.UpdateProduct),
+      ofType<actions.UpdateProduct>(actions.ProductActionTypes.UpdateProduct),
       mergeMap(a =>
         this.service.updateProduct(a.payload)
           .pipe(
-            map(product => new UpdateProductSuccess(product)),
-            catchError(err => of(new UpdateProductFail(err)))
+            map(product => new actions.UpdateProductSuccess(product)),
+            catchError(err => of(new actions.UpdateProductFail(err)))
           ))
     );
 

@@ -1,5 +1,5 @@
-import { Product } from "../product";
-import { ProductActionTypes, ProductActions } from "./product.actions";
+import { Product } from '../product';
+import { ProductActionTypes, ProductActions } from './product.actions';
 
 interface ProductState {
   readonly showProductCode: boolean;
@@ -70,7 +70,7 @@ function reducer(state: ProductState = initialState, action: ProductActions): Pr
       return {
         ...state,
         updateError: action.payload
-      }
+      };
 
     default:
       return state;
